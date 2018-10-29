@@ -11,6 +11,7 @@ import Foundation
 /// data parser
 public struct Anatomy {
     
+    
     // MARK: -- JSON Parser
     
     /// parser JSON to T type Model where T is decodable
@@ -19,13 +20,14 @@ public struct Anatomy {
     ///   - data: JSON data
     ///   - model: T type model is decodable
     /// - Returns: T type model or nil
- public static func parserJSON<T>(with data: Data, to model: T.Type) -> T? where T : Decodable{
+    static func parserJSON<T: Decodable>(with data: Data, to model: T.Type, completion: @escaping (T?)-> Void) {
         do {
-            return try JSONDecoder().decode(model, from: data)
+            let modelInstance = try JSONDecoder().decode(model, from: data)
+            completion(modelInstance)
             
         }catch {
             print(error.localizedDescription)
-            return nil
+            completion(nil)
         }
     }
     
@@ -36,21 +38,21 @@ public struct Anatomy {
     ///   - type: T type is decadable
     ///   - model: T type
     /// - Returns: T type model
-  public  static func parserLocalJSON<T>(with name: String, type: String?,to model: T.Type) -> T? where T : Decodable {
+    static func parserLocalJSON<T: Decodable>(with name: String, type: String?,to model: T.Type,completion: @escaping (T?)-> Void){
         
         /* guard let path = Bundle.main.path(forResource: name, ofType: type) else { return  nil}
          guard let data = FileHandle(forReadingAtPath: path)?.availableData else { return nil }
          
          return parserJson(with: data,to: model)
          */
-        var newModel: T? = nil
+        
         dataFromLocalResource(with: name, type: type) { (data) in
             guard let data = data else { return }
-            newModel = parserJSON(with: data, to: model)
+            parserJSON(with: data, to: model, completion: { newModel in
+                completion(newModel)
+            })
         }
-        return newModel
     }
-    
     
     /// data from local file
     ///
@@ -58,7 +60,7 @@ public struct Anatomy {
     ///   - name: resource's name
     ///   - type: resources file's extension type
     ///   - completion: closer with argument Data?
-  public  static func dataFromLocalResource(with name: String, type: String?, completion: @escaping (Data?) -> ()) {
+    static func dataFromLocalResource(with name: String, type: String?, completion: @escaping (Data?) -> ()) {
         doInBackgound {
             guard let path = Bundle.main.url(forResource: name, withExtension: type) else {
                 doInMain {

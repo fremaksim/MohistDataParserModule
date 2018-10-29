@@ -20,7 +20,7 @@ public struct Anatomy {
     ///   - data: JSON data
     ///   - model: T type model is decodable
     /// - Returns: T type model or nil
-    static func parserJSON<T: Decodable>(with data: Data, to model: T.Type, completion: @escaping (T?)-> Void) {
+  public  static func parserJSON<T: Decodable>(with data: Data, to model: T.Type, completion: @escaping (T?)-> Void) {
         do {
             let modelInstance = try JSONDecoder().decode(model, from: data)
             completion(modelInstance)
@@ -38,7 +38,7 @@ public struct Anatomy {
     ///   - type: T type is decadable
     ///   - model: T type
     /// - Returns: T type model
-    static func parserLocalJSON<T: Decodable>(with name: String, type: String?,to model: T.Type,completion: @escaping (T?)-> Void){
+  public  static func parserLocalJSON<T: Decodable>(with name: String, type: String?,to model: T.Type,completion: @escaping (T?)-> Void){
         
         /* guard let path = Bundle.main.path(forResource: name, ofType: type) else { return  nil}
          guard let data = FileHandle(forReadingAtPath: path)?.availableData else { return nil }
@@ -60,7 +60,7 @@ public struct Anatomy {
     ///   - name: resource's name
     ///   - type: resources file's extension type
     ///   - completion: closer with argument Data?
-    static func dataFromLocalResource(with name: String, type: String?, completion: @escaping (Data?) -> ()) {
+  public  static func dataFromLocalResource(with name: String, type: String?, completion: @escaping (Data?) -> ()) {
         doInBackgound {
             guard let path = Bundle.main.url(forResource: name, withExtension: type) else {
                 doInMain {
